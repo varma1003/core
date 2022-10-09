@@ -79,15 +79,15 @@ CONFIG_SCHEMA = vol.Schema(
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Sure Petcare integration."""
     if DOMAIN not in config:
-        return True
+        
 
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={"source": config_entries.SOURCE_IMPORT},
-            data=config[DOMAIN],
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN,
+                context={"source": config_entries.SOURCE_IMPORT},
+                data=config[DOMAIN],
+            )
         )
-    )
     return True
 
 

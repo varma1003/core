@@ -44,15 +44,15 @@ PLATFORMS = [
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Ring component."""
     if DOMAIN not in config:
-        return True
+        
 
-    def legacy_cleanup():
-        """Clean up old tokens."""
-        old_cache = Path(hass.config.path(".ring_cache.pickle"))
-        if old_cache.is_file():
-            old_cache.unlink()
+        def legacy_cleanup():
+            """Clean up old tokens."""
+            old_cache = Path(hass.config.path(".ring_cache.pickle"))
+            if old_cache.is_file():
+                old_cache.unlink()
 
-    await hass.async_add_executor_job(legacy_cleanup)
+        await hass.async_add_executor_job(legacy_cleanup)
 
     return True
 

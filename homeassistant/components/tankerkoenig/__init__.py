@@ -88,27 +88,27 @@ PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set the tankerkoenig component up."""
     if DOMAIN not in config:
-        return True
+    
 
-    conf = config[DOMAIN]
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={"source": SOURCE_IMPORT},
-            data={
-                CONF_NAME: "Home",
-                CONF_API_KEY: conf[CONF_API_KEY],
-                CONF_FUEL_TYPES: conf[CONF_FUEL_TYPES],
-                CONF_LOCATION: {
-                    "latitude": conf.get(CONF_LATITUDE, hass.config.latitude),
-                    "longitude": conf.get(CONF_LONGITUDE, hass.config.longitude),
+        conf = config[DOMAIN]
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN,
+                context={"source": SOURCE_IMPORT},
+                data={
+                    CONF_NAME: "Home",
+                    CONF_API_KEY: conf[CONF_API_KEY],
+                    CONF_FUEL_TYPES: conf[CONF_FUEL_TYPES],
+                    CONF_LOCATION: {
+                        "latitude": conf.get(CONF_LATITUDE, hass.config.latitude),
+                        "longitude": conf.get(CONF_LONGITUDE, hass.config.longitude),
+                    },
+                    CONF_RADIUS: conf[CONF_RADIUS],
+                    CONF_STATIONS: conf[CONF_STATIONS],
+                    CONF_SHOW_ON_MAP: conf[CONF_SHOW_ON_MAP],
                 },
-                CONF_RADIUS: conf[CONF_RADIUS],
-                CONF_STATIONS: conf[CONF_STATIONS],
-                CONF_SHOW_ON_MAP: conf[CONF_SHOW_ON_MAP],
-            },
+            )
         )
-    )
 
     return True
 

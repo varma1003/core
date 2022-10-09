@@ -67,13 +67,13 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Initialize the shopping list."""
 
     if DOMAIN not in config:
-        return True
+        
 
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": config_entries.SOURCE_IMPORT}
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN, context={"source": config_entries.SOURCE_IMPORT}
+            )
         )
-    )
 
     return True
 

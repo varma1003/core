@@ -76,33 +76,33 @@ CONFIG_SCHEMA = vol.Schema(
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Migrate from YAML to ConfigEntry."""
     if DOMAIN not in config:
-        return True
+        
 
-    hass.data[DOMAIN] = {}
+        hass.data[DOMAIN] = {}
 
-    if not hass.config_entries.async_entries(DOMAIN):
-        new_conf = {}
-        new_conf[CONF_USERNAME] = config[DOMAIN][CONF_USERNAME]
-        new_conf[CONF_PASSWORD] = config[DOMAIN][CONF_PASSWORD]
-        new_conf[CONF_REGION] = config[DOMAIN].get(CONF_REGION)
-        new_conf[CONF_SCANDINAVIAN_MILES] = config[DOMAIN][CONF_SCANDINAVIAN_MILES]
-        new_conf[CONF_MUTABLE] = config[DOMAIN][CONF_MUTABLE]
+        if not hass.config_entries.async_entries(DOMAIN):
+            new_conf = {}
+            new_conf[CONF_USERNAME] = config[DOMAIN][CONF_USERNAME]
+            new_conf[CONF_PASSWORD] = config[DOMAIN][CONF_PASSWORD]
+            new_conf[CONF_REGION] = config[DOMAIN].get(CONF_REGION)
+            new_conf[CONF_SCANDINAVIAN_MILES] = config[DOMAIN][CONF_SCANDINAVIAN_MILES]
+            new_conf[CONF_MUTABLE] = config[DOMAIN][CONF_MUTABLE]
 
-        hass.async_create_task(
-            hass.config_entries.flow.async_init(
-                DOMAIN, context={"source": SOURCE_IMPORT}, data=new_conf
+            hass.async_create_task(
+                hass.config_entries.flow.async_init(
+                    DOMAIN, context={"source": SOURCE_IMPORT}, data=new_conf
+                )
             )
-        )
 
-        async_create_issue(
-            hass,
-            DOMAIN,
-            "deprecated_yaml",
-            breaks_in_ha_version=None,
-            is_fixable=False,
-            severity=IssueSeverity.WARNING,
-            translation_key="deprecated_yaml",
-        )
+            async_create_issue(
+                hass,
+                DOMAIN,
+                "deprecated_yaml",
+                breaks_in_ha_version=None,
+                is_fixable=False,
+                severity=IssueSeverity.WARNING,
+                translation_key="deprecated_yaml",
+            )
 
     return True
 

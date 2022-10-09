@@ -161,15 +161,15 @@ class ValloxDataUpdateCoordinator(DataUpdateCoordinator[ValloxState]):
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the integration from configuration.yaml (DEPRECATED)."""
     if DOMAIN not in config:
-        return True
+        
 
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={"source": SOURCE_IMPORT},
-            data=config[DOMAIN],
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN,
+                context={"source": SOURCE_IMPORT},
+                data=config[DOMAIN],
+            )
         )
-    )
 
     return True
 
@@ -230,10 +230,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
         if hass.data[DOMAIN]:
-            return unload_ok
+            
 
-        for service in SERVICE_TO_METHOD:
-            hass.services.async_remove(DOMAIN, service)
+            for service in SERVICE_TO_METHOD:
+                hass.services.async_remove(DOMAIN, service)
 
     return unload_ok
 

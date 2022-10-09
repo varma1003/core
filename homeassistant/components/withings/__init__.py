@@ -77,27 +77,27 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         # Apply the defaults.
         conf = CONFIG_SCHEMA({DOMAIN: {}})[DOMAIN]
         hass.data[DOMAIN] = {const.CONFIG: conf}
-        return True
+        
 
-    hass.data[DOMAIN] = {const.CONFIG: conf}
+        hass.data[DOMAIN] = {const.CONFIG: conf}
 
-    # Setup the oauth2 config flow.
-    if CONF_CLIENT_ID in conf:
-        await async_import_client_credential(
-            hass,
-            DOMAIN,
-            ClientCredential(
-                conf[CONF_CLIENT_ID],
-                conf[CONF_CLIENT_SECRET],
-            ),
-        )
-        _LOGGER.warning(
-            "Configuration of Withings integration OAuth2 credentials in YAML "
-            "is deprecated and will be removed in a future release; Your "
-            "existing OAuth Application Credentials have been imported into "
-            "the UI automatically and can be safely removed from your "
-            "configuration.yaml file"
-        )
+        # Setup the oauth2 config flow.
+        if CONF_CLIENT_ID in conf:
+            await async_import_client_credential(
+                hass,
+                DOMAIN,
+                ClientCredential(
+                    conf[CONF_CLIENT_ID],
+                    conf[CONF_CLIENT_SECRET],
+                ),
+            )
+            _LOGGER.warning(
+                "Configuration of Withings integration OAuth2 credentials in YAML "
+                "is deprecated and will be removed in a future release; Your "
+                "existing OAuth Application Credentials have been imported into "
+                "the UI automatically and can be safely removed from your "
+                "configuration.yaml file"
+            )
 
     return True
 
