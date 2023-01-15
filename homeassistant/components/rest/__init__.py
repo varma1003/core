@@ -83,41 +83,39 @@ def _async_setup_shared_data(hass: HomeAssistant):
 
 async def _async_process_config(hass, config) -> bool:
     """Process rest configuration."""
-    if DOMAIN not in config:
-        return True
+    if DOMAIN in config:
+        refresh_tasks = []
+        load_tasks = []
+        for rest_idx, conf in enumerate(config[DOMAIN]):
+            scan_interval = conf.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            resource_template = conf.get(CONF_RESOURCE_TEMPLATE)
+            rest = create_rest_data_from_config(hass, conf)
+            coordinator = _rest_coordinator(hass, rest, resource_template, scan_interval)
+            refresh_tasks.append(coordinator.async_refresh())
+            hass.data[DOMAIN][REST_DATA].append({REST: rest, COORDINATOR: coordinator})
 
-    refresh_tasks = []
-    load_tasks = []
-    for rest_idx, conf in enumerate(config[DOMAIN]):
-        scan_interval = conf.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
-        resource_template = conf.get(CONF_RESOURCE_TEMPLATE)
-        rest = create_rest_data_from_config(hass, conf)
-        coordinator = _rest_coordinator(hass, rest, resource_template, scan_interval)
-        refresh_tasks.append(coordinator.async_refresh())
-        hass.data[DOMAIN][REST_DATA].append({REST: rest, COORDINATOR: coordinator})
+            for platform_domain in COORDINATOR_AWARE_PLATFORMS:
+                if platform_domain not in conf:
+                    continue
 
-        for platform_domain in COORDINATOR_AWARE_PLATFORMS:
-            if platform_domain not in conf:
-                continue
+                for platform_conf in conf[platform_domain]:
+                    hass.data[DOMAIN][platform_domain].append(platform_conf)
+                    platform_idx = len(hass.data[DOMAIN][platform_domain]) - 1
 
-            for platform_conf in conf[platform_domain]:
-                hass.data[DOMAIN][platform_domain].append(platform_conf)
-                platform_idx = len(hass.data[DOMAIN][platform_domain]) - 1
+                    load = discovery.async_load_platform(
+                        hass,
+                        platform_domain,
+                        DOMAIN,
+                        {REST_IDX: rest_idx, PLATFORM_IDX: platform_idx},
+                        config,
+                    )
+                    load_tasks.append(load)
 
-                load = discovery.async_load_platform(
-                    hass,
-                    platform_domain,
-                    DOMAIN,
-                    {REST_IDX: rest_idx, PLATFORM_IDX: platform_idx},
-                    config,
-                )
-                load_tasks.append(load)
+        if refresh_tasks:
+            await asyncio.gather(*refresh_tasks)
 
-    if refresh_tasks:
-        await asyncio.gather(*refresh_tasks)
-
-    if load_tasks:
-        await asyncio.gather(*load_tasks)
+        if load_tasks:
+            await asyncio.gather(*load_tasks)
 
     return True
 
